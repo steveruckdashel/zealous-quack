@@ -18,8 +18,8 @@ import (
 )
 
 var conf = &oauth2.Config{
-  ClientID:     "dj0yJmk9c0RVNkRVWmtpWEtIJmQ9WVdrOVlsVmFaVUZMTldjbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD05OQ--",//os.Getenv("YAHOO_CLIENTID"),
-  ClientSecret: "4af5e009af8b593ffeac3140f449f6f2b1277371",//os.Getenv("YAHOO_SECRET"),
+  ClientID:     os.Getenv("YAHOO_CLIENTID"),
+  ClientSecret: os.Getenv("YAHOO_SECRET"),
   Scopes:       []string{},
   Endpoint: oauth2.Endpoint{
     AuthURL:  "https://api.login.yahoo.com/oauth2/request_auth",
