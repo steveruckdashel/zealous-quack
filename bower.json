@@ -1,0 +1,24 @@
+{
+  "name": "zealous-quack",
+  "version": "1.0.0",
+  "homepage": "https://github.com/steveruckdashel/zealous-quack",
+  "authors": [
+    "Steven Ruckdashel <steve.ruckdashel@gmail.com>"
+  ],
+  "description": "yahoo fantasy football super comish",
+  "main": "main.go",
+  "keywords": [
+    "go"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "react": "~0.13.3"
+  }
+}
