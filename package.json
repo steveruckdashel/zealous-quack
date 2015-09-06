@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "go test",
-    "postinstall": "./node_modules/bower/bin/bower install"
+    "postinstall": "./node_modules/bower/bin/bower install && gulp"
   },
   "repository": {
     "type": "git",
