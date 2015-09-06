@@ -26,7 +26,7 @@ var conf = &oauth2.Config{
     AuthURL:  "https://api.login.yahoo.com/oauth2/request_auth",
     TokenURL: "https://api.login.yahoo.com/oauth2/get_token",
   },
-  RedirectURL: "http://vfootballogic.azurewebsites.net/auth/yahoo/callback",
+  RedirectURL: "http://limitless-refuge-3809.herokuapp.com/auth/yahoo/callback",
 }
 
 // randomString returns a random string with the specified length
@@ -108,9 +108,7 @@ func main() {
 
   port, err := strconv.Atoi(os.Getenv("PORT"))
   if err!=nil {
-    log.Printf("Bad port: '%s', using 8080", os.Getenv("PORT"))
-    // log.Fatal("$PORT must be set")
-    port = 8080
+    log.Fatal("Bad port: '%s'", os.Getenv("PORT"))
   }
 
   // if store, err := NewRediStore(size int, network, address, password string, keyPairs ...[]byte) (*RediStore, error); err!=nil {
