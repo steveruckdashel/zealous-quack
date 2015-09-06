@@ -6,16 +6,17 @@ import (
   "net/url"
 	"os"
   "io"
-  "fmt"
   "strconv"
   "encoding/base64"
   "crypto/rand"
-
+	"html/template"
   "github.com/gorilla/mux"
   "github.com/gorilla/sessions"
   "golang.org/x/oauth2"
   //gopkg.in/boj/redistore.v1
 )
+
+var Views *template.Template
 
 var conf = &oauth2.Config{
   ClientID:     os.Getenv("YAHOO_CLIENTID"),
@@ -48,7 +49,9 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	session.Values["state"] = state
 	session.Save(r, w)
 
-  fmt.Fprint(w, "<h1>Hello</h1><a href='/auth/yahoo'>Login With Yahoo</a>")
+	if err := Views.Lookup("home.ghtml").Execute(w, struct{}{}); err != nil {
+		log.Printf("error executing view template: %v", err)
+	}
 }
 
 func AuthYahoo(w http.ResponseWriter, r *http.Request) {
@@ -98,11 +101,16 @@ func AuthYahooCallback(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	Views = template.New("Home")
+	if _, err := Views.ParseGlob("./views/*.ghtml"); err != nil {
+		log.Fatalf("invalid view, %v", err)
+	}
+
   port, err := strconv.Atoi(os.Getenv("PORT"))
   if err!=nil {
     log.Printf("Bad port: '%s', using 8080", os.Getenv("PORT"))
     // log.Fatal("$PORT must be set")
-    port = 8088
+    port = 8080
   }
 
   // if store, err := NewRediStore(size int, network, address, password string, keyPairs ...[]byte) (*RediStore, error); err!=nil {
