@@ -5,29 +5,17 @@ import (
 	"encoding/base64"
 	"github.com/steveruckdashel/zealous-quack/Godeps/_workspace/src/github.com/gorilla/mux"
 	"github.com/steveruckdashel/zealous-quack/Godeps/_workspace/src/github.com/gorilla/sessions"
-	"github.com/steveruckdashel/zealous-quack/Godeps/_workspace/src/golang.org/x/oauth2"
+	"github.com/steveruckdashel/zealous-quack/Godeps/_workspace/src/github.com/steveruckdashel/auth_yahoo"
+	//redistore "github.com/steveruckdashel/zealous-quack/Godeps/_workspace/src/gopkg.in/boj/redistore.v1"
 	"html/template"
-	"io"
 	"log"
 	"net/http"
-	"net/url"
+	//"net/url"
 	"os"
 	"strconv"
-	//gopkg.in/boj/redistore.v1
 )
 
 var Views *template.Template
-
-var conf = &oauth2.Config{
-	ClientID:     os.Getenv("YAHOO_CLIENTID"),
-	ClientSecret: os.Getenv("YAHOO_SECRET"),
-	Scopes:       []string{},
-	Endpoint: oauth2.Endpoint{
-		AuthURL:  "https://api.login.yahoo.com/oauth2/request_auth",
-		TokenURL: "https://api.login.yahoo.com/oauth2/get_token",
-	},
-	RedirectURL: "http://limitless-refuge-3809.herokuapp.com/auth/yahoo/callback",
-}
 
 // randomString returns a random string with the specified length
 func randomString(length int) (str string) {
@@ -37,9 +25,7 @@ func randomString(length int) (str string) {
 }
 
 // store initializes the Gorilla session store.
-var store = sessions.NewCookieStore([]byte(randomString(32)))
-
-//var sessionStore *sessions.Store
+var store sessions.Store
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	session, err := store.Get(r, "session-name")
@@ -55,52 +41,6 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func AuthYahoo(w http.ResponseWriter, r *http.Request) {
-	session, err := store.Get(r, "session-name")
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	// Redirect user to consent page to ask for permission
-	// for the scopes specified above.
-	urlStr := conf.AuthCodeURL(session.Values["state"].(string), oauth2.AccessTypeOnline)
-	urlStrUnesc, err := url.QueryUnescape(urlStr)
-	if err != nil {
-		log.Println(err)
-	}
-	log.Printf("Visit the URL for the auth dialog: %v", urlStrUnesc)
-
-	http.Redirect(w, r, urlStrUnesc, 302)
-}
-
-func AuthYahooCallback(w http.ResponseWriter, r *http.Request) {
-	session, err := store.Get(r, "session-name")
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-	// Use the authorization code that is pushed to the redirect URL.
-	// NewTransportWithCode will do the handshake to retrieve
-	// an access token and initiate a Transport that is
-	// authorized and authenticated by the retrieved token.
-	code := r.FormValue("code")
-
-	tok, err := conf.Exchange(oauth2.NoContext, code)
-	if err != nil {
-		log.Fatal(err)
-	}
-	session.Values["accessToken"] = tok.AccessToken
-	session.Values["xoauth_yahoo_guid"] = r.FormValue("xoauth_yahoo_guid")
-	session.Save(r, w)
-
-	client := conf.Client(oauth2.NoContext, tok)
-	resp, err := client.Get("https://fantasysports.yahooapis.com/fantasy/v2/game/nfl")
-	io.Copy(w, resp.Body)
-
-	//http.Redirect(w, r, "/", 302)
-}
-
 func main() {
 	Views = template.New("Home")
 	if _, err := Views.ParseGlob("./views/*.ghtml"); err != nil {
@@ -112,19 +52,30 @@ func main() {
 		log.Fatal("Bad port: '%s'", os.Getenv("PORT"))
 	}
 
-	// if store, err := NewRediStore(size int, network, address, password string, keyPairs ...[]byte) (*RediStore, error); err!=nil {
-	//   log.Fatal("Unable to connect to Redis", err)
+store = sessions.NewCookieStore([]byte(randomString(32)))
+	// if u, err := url.Parse(os.Getenv("REDIS_URL")); err != nil {
+	// 	store = sessions.NewCookieStore([]byte(randomString(32)))
 	// } else {
-	//   sessionStore = store
+	// 	var address = url.URL{
+	// 		User: url.User(u.User.Username()),
+	// 		Host: u.Host,
+	// 	}
+	// 	pass, _ := u.User.Password()
+	// 	if st, e := redistore.NewRediStore(5, "tcp", address.String(), pass); e != nil {
+	// 		log.Fatal("Unable to connect to Redis", e)
+	// 	} else {
+	// 		store = st
+	// 	}
 	// }
-	// defer sessionStore.Close()
+	//defer store.Close()
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", HomeHandler)
-	r.HandleFunc("/auth/yahoo", AuthYahoo)
-	r.HandleFunc("/auth/yahoo/callback", AuthYahooCallback)
+
+	auth := auth_yahoo.NewAuthYahoo(os.Getenv("YAHOO_CLIENTID"), os.Getenv("YAHOO_SECRET"), []string{}, "http://limitless-refuge-3809.herokuapp.com/auth", "/", store)
+	auth.RegisterRoutes(r)
+
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./wwwroot/")))
-	// r.HandleFunc("/articles", ArticlesHandler)
 	http.Handle("/", r)
 
 	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(port), nil))

@@ -1,15 +1,7 @@
 {
-	"ImportPath": "github.com/steveruckdashel/zealous-quack",
+	"ImportPath": "github.com/steveruckdashel/auth_yahoo",
 	"GoVersion": "go1.5",
 	"Deps": [
-		{
-			"ImportPath": "github.com/garyburd/redigo/internal",
-			"Rev": "d8dbe4d94f15fe89232e0402c6e8a0ddf21af3ab"
-		},
-		{
-			"ImportPath": "github.com/garyburd/redigo/redis",
-			"Rev": "d8dbe4d94f15fe89232e0402c6e8a0ddf21af3ab"
-		},
 		{
 			"ImportPath": "github.com/gorilla/context",
 			"Rev": "14f550f51af52180c2eefed15e5fd18d63c0a64a"
@@ -27,21 +19,12 @@
 			"Rev": "b6bcae186ac3099dba8fafce125dc930393f1e5e"
 		},
 		{
-			"ImportPath": "github.com/steveruckdashel/auth_yahoo",
-			"Rev": "19cedbc9877ee89b8a5cac388819a71be9a9a71d"
-		},
-		{
 			"ImportPath": "golang.org/x/net/context",
 			"Rev": "db8e4de5b2d6653f66aea53094624468caad15d2"
 		},
 		{
 			"ImportPath": "golang.org/x/oauth2",
 			"Rev": "ad0128250e8fba646a92ca9129716e523d63ef9f"
-		},
-		{
-			"ImportPath": "gopkg.in/boj/redistore.v1",
-			"Comment": "v1",
-			"Rev": "9d1554b400d726c7aa54b6e4a836f273b72b97f7"
 		}
 	]
 }
