@@ -5,8 +5,7 @@ import (
 	"encoding/base64"
 	"github.com/steveruckdashel/zealous-quack/Godeps/_workspace/src/github.com/gorilla/mux"
 	"github.com/steveruckdashel/zealous-quack/Godeps/_workspace/src/github.com/gorilla/sessions"
-	"github.com/steveruckdashel/zealous-quack/Godeps/_workspace/src/github.com/steveruckdashel/auth_yahoo"
-	"github.com/steveruckdashel/zealous-quack/Godeps/_workspace/src/github.com/steveruckdashel/fantasyfootball"
+	"github.com/steveruckdashel/yahooapi"
 	//redistore "github.com/steveruckdashel/zealous-quack/Godeps/_workspace/src/gopkg.in/boj/redistore.v1"
 	"html/template"
 	"log"
@@ -70,12 +69,13 @@ store = sessions.NewCookieStore([]byte(randomString(32)))
 	// }
 	//defer store.Close()
 
+
 	r := mux.NewRouter()
 	r.HandleFunc("/", HomeHandler)
 
-	auth := auth_yahoo.NewAuthYahoo(os.Getenv("YAHOO_CLIENTID"), os.Getenv("YAHOO_SECRET"), []string{}, "http://limitless-refuge-3809.herokuapp.com/auth", "/", store)
-	auth.RegisterRoutes(r)
-
+	yapi := yahooapi.NewAuthYahoo(os.Getenv("YAHOO_CLIENTID"), os.Getenv("YAHOO_SECRET"), []string{}, "http://limitless-refuge-3809.herokuapp.com/auth", "/", store)
+	yapi.RegisterRoutes(r)
+	
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./wwwroot/")))
 	http.Handle("/", r)
 
