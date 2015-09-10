@@ -12,7 +12,7 @@
 		},
 		{
 			"ImportPath": "github.com/gorilla/context",
-			"Rev": "14f550f51af52180c2eefed15e5fd18d63c0a64a"
+			"Rev": "215affda49addc4c8ef7e2534915df2c8c35c6cd"
 		},
 		{
 			"ImportPath": "github.com/gorilla/mux",
@@ -20,15 +20,15 @@
 		},
 		{
 			"ImportPath": "github.com/gorilla/securecookie",
-			"Rev": "e95799a481bbcc3d01c2ad5178524cb8bec9f370"
+			"Rev": "5f171f42328bdd573211bb82bdee8f259c4c61ae"
 		},
 		{
 			"ImportPath": "github.com/gorilla/sessions",
-			"Rev": "b6bcae186ac3099dba8fafce125dc930393f1e5e"
+			"Rev": "13c86220d944600e7a6e3de6c87418896ccfbe77"
 		},
 		{
 			"ImportPath": "github.com/steveruckdashel/yahooapi",
-			"Rev": "edefb803f7a62c833f762b9b46ebfb0a127c76d4"
+			"Rev": "a6ef0c530f0bb7477e6246512b110032e172bb38"
 		},
 		{
 			"ImportPath": "golang.org/x/net/context",

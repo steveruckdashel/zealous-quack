@@ -74,11 +74,12 @@ func main() {
 		}
 	}
 
-
 	r := mux.NewRouter()
 	r.HandleFunc("/", HomeHandler)
 
-	yapi := yahooapi.NewYahooConfig(os.Getenv("YAHOO_CLIENTID"), os.Getenv("YAHOO_SECRET"), []string{}, "http://limitless-refuge-3809.herokuapp.com/auth", "/", store)
+	client := os.Getenv("YAHOO_CLIENTID")
+	secret := os.Getenv("YAHOO_SECRET")
+	yapi := yahooapi.NewYahooConfig(client, secret, []string{}, "http://limitless-refuge-3809.herokuapp.com", "/", store)
 	yapi.RegisterRoutes(r)
 
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./wwwroot/")))

@@ -7,11 +7,18 @@ var sourcemaps = require('gulp-sourcemaps');
 var del = require('del'); // rm -rf
 var webpack = require("webpack");
 
-gulp.task('default', ['assets', 'sass', 'webpack']);
+gulp.task('default', ['assets', 'style', 'webpack']);
 
 gulp.task('assets', function () {
   gulp.src('./unmanaged/salesforce-lightning-design-system-v0.8.0/assets/**/*.*')
     .pipe(gulp.dest('./wwwroot/assets'));
+});
+
+gulp.task('style', ['sass', 'css']);
+
+gulp.task('css', function() {
+  gulp.src(['./node_modules/fixed-data-table/dist/*.min.css'])
+    .pipe(gulp.dest('./wwwroot/css'));
 });
 
 gulp.task('sass', function () {

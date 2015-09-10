@@ -4,14 +4,12 @@
 package yahooapi
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	// "encoding/json"
 	"encoding/xml"
 	"github.com/steveruckdashel/zealous-quack/Godeps/_workspace/src/golang.org/x/oauth2"
-	"os"
 )
 
 // `json:"myName,omitempty"`
@@ -238,13 +236,13 @@ import (
 //     </fantasy_content>
 //
 type GameResource struct {
-	XMLName  xml.Name `xml:"game"`
-	Game_key string   `xml:"game_key"`
-	Game_id  string   `xml:"game_id"`
-	Namecode string   `xml:"namecode"`
-	Type     string   `xml:"type"`
-	Url      string   `xml:"url"`
-	Season   string   `xml:"season"`
+	XMLName  xml.Name `xml:"game",json:"-"`
+	Game_key string   `xml:"game_key",json:",omitempty"`
+	Game_id  string   `xml:"game_id",json:",omitempty"`
+	Namecode string   `xml:"namecode",json:",omitempty"`
+	Type     string   `xml:"type",json:",omitempty"`
+	Url      string   `xml:"url",json:",omitempty"`
+	Season   string   `xml:"season",json:",omitempty"`
 }
 
 /*
@@ -3532,6 +3530,7 @@ http://fantasysports.yahooapis.com/fantasy/v2/transaction/257.l.193.pt.1 - Pendi
 //       </transaction>
 //     </fantasy_content>
 func (y *YahooConfig) EditWaivers() {
+	panic("Not Implemented")
 	// PUT
 }
 
@@ -3550,6 +3549,7 @@ func (y *YahooConfig) EditWaivers() {
 //       </transaction>
 //     </fantasy_content>
 func (y *YahooConfig) AcceptTrade() {
+	panic("Not Implemented")
 	// PUT
 }
 
@@ -3565,6 +3565,7 @@ func (y *YahooConfig) AcceptTrade() {
 //       </transaction>
 //     </fantasy_content>
 func (y *YahooConfig) RejectTrade() {
+	panic("Not Implemented")
 	// PUT
 }
 
@@ -3592,10 +3593,12 @@ func (y *YahooConfig) RejectTrade() {
 //      </transaction>
 //    </fantasy_content>
 func (y *YahooConfig) AllowTrade() {
+	panic("Not Implemented")
 	// PUT
 
 }
 func (y *YahooConfig) DisallowTrade() {
+	panic("Not Implemented")
 	// PUT
 
 }
@@ -3616,6 +3619,7 @@ func (y *YahooConfig) DisallowTrade() {
 //       </transaction>
 //     </fantasy_content>
 func (y *YahooConfig) VoteDownTrade() {
+	panic("Not Implemented")
 	// PUT
 }
 
@@ -3627,9 +3631,11 @@ func (y *YahooConfig) VoteDownTrade() {
 // You can only DELETE transactions of the types waiver or pending_trade if the
 // pending trade has not yet been accepted.
 func (y *YahooConfig) DeleteWaiver() {
+	panic("Not Implemented")
 	// DELETE
 }
 func (y *YahooConfig) DeletePendingTrade() {
+	panic("Not Implemented")
 	// DELETE
 }
 
@@ -3683,6 +3689,7 @@ type TransactionCollection struct{}
 //
 //
 func (y *YahooConfig) GetTransactionCollection() *TransactionCollection {
+	panic("Not Implemented")
 	return nil
 }
 
@@ -3876,8 +3883,18 @@ func (y *YahooConfig) GetUserResource() *UserResource {
 // With the Users API, you can obtain information from a collection of users
 // simultaneously. Each element beneath the Users Collection will be a User
 // Resource
+//
+//     <fantasy_content xmlns:yahoo="http://www.yahooapis.com/v1/base.rng" xmlns="http://fantasysports.yahooapis.com/fantasy/v2/base.rng" xml:lang="en-US" yahoo:uri="http://fantasysports.yahooapis.com/fantasy/v2/users;use_login=1" time="22.95708656311ms" copyright="Data provided by Yahoo! and STATS, LLC" refresh_rate="31">
+//       <users count="1">
+//         <user>
+//           <guid>VJ....DM</guid>
+//         </user>
+//       </users>
+//     </fantasy_content>
 type UserCollection struct {
-	Body string
+	XMLName   xml.Name       `xml:"fantasy_content",json:"-"`
+	UserGuids []string       `xml:"users>user>guid",json:",omitempty"`
+	Games     []GameResource `xml:"users>user>games>game",json:",omitempty"`
 }
 
 // Retrieve User Collection
@@ -3900,29 +3917,31 @@ func (y *YahooConfig) GetUserCollection(r *http.Request) *UserCollection {
 		return nil
 	}
 
-	tok := session.Values["token"].(oauth2.Token)
-	client := y.conf.Client(oauth2.NoContext, &tok)
+	tok, ok := session.Values["token"].(*oauth2.Token)
+	if !ok {
+		log.Println("error deserializing token from session")
+		return nil
+	}
+	client := y.conf.Client(oauth2.NoContext, tok)
 
-	var userCollection UserCollection
+	req, err := http.NewRequest("GET", "https://fantasysports.yahooapis.com/fantasy/v2/users;use_login=1/games", nil)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	res, err := client.Get("http://fantasysports.yahooapis.com/fantasy/v2/users;use_login=1")
+	res, err := client.Do(req)
 	if err != nil {
 		log.Fatal(err)
 	}
 	body, err := ioutil.ReadAll(res.Body)
-	res.Body.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Fprintf(os.Stderr, "%s", body)
-	userCollection.Body = string(body)
-
-	// var animals []Animal
-	// err := json.Unmarshal(jsonBlob, &animals)
-	// if err != nil {
-	// 	fmt.Println("error:", err)
-	// }
-	// fmt.Printf("%+v", animals)
+	defer res.Body.Close()
+	var userCollection UserCollection
+	if xml.Unmarshal(body, &userCollection); err != nil {
+		log.Fatal(err)
+	}
 
 	return &userCollection
 }
