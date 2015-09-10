@@ -5,12 +5,12 @@ import (
 	"encoding/base64"
 	"github.com/steveruckdashel/zealous-quack/Godeps/_workspace/src/github.com/gorilla/mux"
 	"github.com/steveruckdashel/zealous-quack/Godeps/_workspace/src/github.com/gorilla/sessions"
-	"github.com/steveruckdashel/yahooapi"
-	//redistore "github.com/steveruckdashel/zealous-quack/Godeps/_workspace/src/gopkg.in/boj/redistore.v1"
+	"github.com/steveruckdashel/zealous-quack/Godeps/_workspace/src/github.com/steveruckdashel/yahooapi"
+	redistore "github.com/steveruckdashel/zealous-quack/Godeps/_workspace/src/gopkg.in/boj/redistore.v1"
 	"html/template"
 	"log"
 	"net/http"
-	//"net/url"
+	"net/url"
 	"os"
 	"strconv"
 )
@@ -28,9 +28,14 @@ func randomString(length int) (str string) {
 var store sessions.Store
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	session, err := store.Get(r, "session-name")
+	var session *sessions.Session
+	s, err := store.Get(r, "session-name")
 	if err != nil {
 		log.Println("error fetching session:", err)
+		s, _ := store.New(r, "session-name")
+		session = s
+	} else {
+		session = s
 	}
 	state := randomString(64)
 	session.Values["state"] = state
@@ -52,30 +57,30 @@ func main() {
 		log.Fatal("Bad port: '%s'", os.Getenv("PORT"))
 	}
 
-store = sessions.NewCookieStore([]byte(randomString(32)))
-	// if u, err := url.Parse(os.Getenv("REDIS_URL")); err != nil {
-	// 	store = sessions.NewCookieStore([]byte(randomString(32)))
-	// } else {
-	// 	var address = url.URL{
-	// 		User: url.User(u.User.Username()),
-	// 		Host: u.Host,
-	// 	}
-	// 	pass, _ := u.User.Password()
-	// 	if st, e := redistore.NewRediStore(5, "tcp", address.String(), pass); e != nil {
-	// 		log.Fatal("Unable to connect to Redis", e)
-	// 	} else {
-	// 		store = st
-	// 	}
-	// }
-	//defer store.Close()
+	//store = sessions.NewCookieStore([]byte(randomString(32)))
+	if u, err := url.Parse(os.Getenv("REDIS_URL")); err != nil || u.Host == "" {
+		store = sessions.NewCookieStore([]byte(randomString(32)))
+	} else {
+		var address = url.URL{
+			User: url.User(u.User.Username()),
+			Host: u.Host,
+		}
+		pass, _ := u.User.Password()
+		if st, e := redistore.NewRediStore(5, "tcp", address.String(), pass); e != nil {
+			log.Fatal("Unable to connect to Redis", e)
+		} else {
+			store = st
+			defer st.Close()
+		}
+	}
 
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", HomeHandler)
 
-	yapi := yahooapi.NewAuthYahoo(os.Getenv("YAHOO_CLIENTID"), os.Getenv("YAHOO_SECRET"), []string{}, "http://limitless-refuge-3809.herokuapp.com/auth", "/", store)
+	yapi := yahooapi.NewYahooConfig(os.Getenv("YAHOO_CLIENTID"), os.Getenv("YAHOO_SECRET"), []string{}, "http://limitless-refuge-3809.herokuapp.com/auth", "/", store)
 	yapi.RegisterRoutes(r)
-	
+
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./wwwroot/")))
 	http.Handle("/", r)
 

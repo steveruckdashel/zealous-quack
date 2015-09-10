@@ -11,7 +11,8 @@
   <body>
     <div class="slds-grid">
       <div class="slds-col">Contents go here.</div>
-      <div class="slds-col"><a href="/auth/yahoo/" class="slds-button slds-button--brand">Login with Yahoo</a></div>
+      <div class="slds-col"><a href="/yahoo/auth/" class="slds-button slds-button--brand">Login with Yahoo</a></div>
+      <div class="slds-col"><a href="/yahoo/users/" class="slds-button slds-button--brand">Get User</a></div>
     </div>
     <div id=content>
       <script src="js/bundle.js"></script>

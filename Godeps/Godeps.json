@@ -27,8 +27,8 @@
 			"Rev": "b6bcae186ac3099dba8fafce125dc930393f1e5e"
 		},
 		{
-			"ImportPath": "github.com/steveruckdashel/auth_yahoo",
-			"Rev": "19cedbc9877ee89b8a5cac388819a71be9a9a71d"
+			"ImportPath": "github.com/steveruckdashel/yahooapi",
+			"Rev": "edefb803f7a62c833f762b9b46ebfb0a127c76d4"
 		},
 		{
 			"ImportPath": "golang.org/x/net/context",
