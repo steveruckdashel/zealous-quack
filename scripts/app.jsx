@@ -1,14 +1,20 @@
 import React from "react";
-import Greeting from "./greeting.jsx";
-import User from "./user.jsx";
+import Menu from "./menu.jsx"
+import Body from "./body.jsx"
 //var FixedDataTable = require('fixed-data-table');
 
-React.render(
-  <Greeting name="World"/>,
-  document.getElementById('content')
-);
+let App = React.createClass({
+    render: function () {
+        return (
+          <div>
+            <Menu />
+            <Body />
+          </div>
+        );
+    }
+});
 
 React.render(
-  <User url="/yahoo/users/" pollInterval={31000} />,
-  document.getElementById('user')
-)
+  <App />,
+  document.body
+);
