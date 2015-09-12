@@ -6,13 +6,14 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/steveruckdashel/yahooapi"
-	redistore "gopkg.in/boj/redistore.v1"
 	"html/template"
 	"log"
 	"net/http"
-	"net/url"
 	"os"
 	"strconv"
+	// redistore "gopkg.in/boj/redistore.v1"
+	// "net/url"
+	// "fmt"
 )
 
 var Views *template.Template
@@ -57,29 +58,27 @@ func main() {
 		log.Fatal("Bad port: '%s'", os.Getenv("PORT"))
 	}
 
-	//store = sessions.NewCookieStore([]byte(randomString(32)))
-	if u, err := url.Parse(os.Getenv("REDIS_URL")); err != nil || u.Host == "" {
-		store = sessions.NewCookieStore([]byte(randomString(32)))
-	} else {
-		var address = url.URL{
-			User: url.User(u.User.Username()),
-			Host: u.Host,
-		}
-		pass, _ := u.User.Password()
-		if st, e := redistore.NewRediStore(5, "tcp", address.String(), pass); e != nil {
-			log.Fatal("Unable to connect to Redis", e)
-		} else {
-			store = st
-			defer st.Close()
-		}
-	}
+	store = sessions.NewCookieStore([]byte(randomString(32)))
+	// if u, err := url.Parse(os.Getenv("REDIS_URL")); err != nil || u.Host == "" {
+	// 	store = sessions.NewCookieStore([]byte(randomString(32)))
+	// } else {
+	// 	address := fmt.Sprintf("%s",u.Host)
+	// 	pass, _ := u.User.Password()
+	// 	// log.Println(address.String())
+	// 	if st, e := redistore.NewRediStore(5, "tcp", address, pass); e != nil {
+	// 		log.Fatal("Unable to connect to Redis", e)
+	// 	} else {
+	// 		store = st
+	// 		defer st.Close()
+	// 	}
+	// }
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", HomeHandler)
 
-	client := os.Getenv("YAHOO_CLIENTID")
+	clientid := os.Getenv("YAHOO_CLIENTID")
 	secret := os.Getenv("YAHOO_SECRET")
-	yapi := yahooapi.NewYahooConfig(client, secret, []string{}, "http://limitless-refuge-3809.herokuapp.com", "/", store)
+	yapi := yahooapi.NewYahooConfig(clientid, secret, []string{}, "http://limitless-refuge-3809.herokuapp.com", "/", store)
 	yapi.RegisterRoutes(r)
 
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./wwwroot/")))

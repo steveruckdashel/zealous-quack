@@ -1,1 +1,1 @@
-web: zealous-quack
+web: ./zealous-quack
