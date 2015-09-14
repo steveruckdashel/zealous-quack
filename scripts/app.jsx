@@ -6,7 +6,7 @@ import Body from "./body.jsx"
 let App = React.createClass({
     render: function () {
         return (
-          <div>
+          <div className="slds-grid slds-wrap">
             <Menu />
             <Body />
           </div>
