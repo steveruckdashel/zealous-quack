@@ -4,7 +4,7 @@ export default React.createClass({
   render: function() {
     var guidNodes = this.props.data.map(function(guid){
       return (
-          <div>
+          <div key={guid}>
             <span>{guid}</span>
           </div>
       );
