@@ -6,7 +6,7 @@ export default React.createClass({
     render: function () {
         return (
           <div className="slds-grid">
-            <div className="slds-col" id="user"><User url="/yahoo/users/games" pollInterval={31000} /></div>
+            <div className="slds-col" id="user"><User /></div>
             <div className="slds-col">
               <Greeting name="World"/>
             </div>

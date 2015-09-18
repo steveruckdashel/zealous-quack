@@ -8,7 +8,7 @@ export default React.createClass({
         this.setState({data: JSON.parse(data)});
       }.bind(this))
       .catch(function(xhr, status, err) {
-        console.error(this.props.url, status, err);
+        console.error(xhr, status, err);
       }.bind(this));
   },
   getInitialState: function() {
