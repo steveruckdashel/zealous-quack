@@ -22,7 +22,7 @@ gulp.task('css', function() {
 });
 
 gulp.task('sass', function () {
-  gulp.src('./unmanaged/salesforce-lightning-design-system-v0.9.0/scss/index.scss')
+  gulp.src('./node_modules/@salesforce-ux/design-system/scss/index.scss')
     .pipe(sourcemaps.init())
       .pipe(sass().on('error', sass.logError))
     .pipe(sourcemaps.write('./wwwroot/maps'))
