@@ -1,8 +1,9 @@
 import React from "react";
+import * as http from "./http.js";
 
 export default React.createClass({
   loadGameFromServer: function() {
-    $http(this.props.url)
+    http.url(this.props.url)
       .get({})
       .then(function(data) {
         this.setState({data: JSON.parse(data)});

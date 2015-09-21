@@ -1,14 +1,15 @@
 import React from "react";
+import * as http from "./http.js";
 
 export default React.createClass({
   loadGameFromServer: function() {
-    $http("/yahoo/users/leagues/{this.props.data}/scoreboard")
+    http.url("/yahoo/users/leagues/"+{this.props.data}+"/scoreboard")
       .get({})
       .then(function(data) {
         this.setState({data: JSON.parse(data)});
       }.bind(this))
       .catch(function(xhr, status, err) {
-        console.error(this.props.url, status, err);
+        console.error(xhr, status, err);
       }.bind(this));
   },
   getInitialState: function() {

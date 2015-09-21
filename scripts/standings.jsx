@@ -1,8 +1,9 @@
 import React from "react";
+import * as http from "./http.js";
 
 export default React.createClass({
   loadGameFromServer: function() {
-    $http("/yahoo/users/leagues/{this.props.data}/standings")
+    http.url("/yahoo/users/leagues/"+{this.props.data}+"/standings")
       .get({})
       .then(function(data) {
         this.setState({data: JSON.parse(data)});

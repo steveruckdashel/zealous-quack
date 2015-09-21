@@ -1,17 +1,17 @@
 import React from "react";
 import GameList from "./gameList.jsx";
 import GuidList from "./guidList.jsx";
-import $http from "./http.js";
+import * as http from "./http.js";
 
 export default React.createClass({
   loadUserFromServer: function() {
-    $http("/yahoo/users/games")
+    http.url("/yahoo/users/games")
       .get({})
       .then(function(data) {
         this.setState({data: JSON.parse(data)});
       }.bind(this))
       .catch(function(xhr, status, err) {
-        console.error(this.props.url, xhr, status, err);
+        console.error(xhr, status, err);
       }.bind(this));
   },
   getInitialState: function() {
@@ -39,7 +39,7 @@ export default React.createClass({
     });
 
     return (
-      <div className="users">
+      <div className="user">
         {userNodes}
       </div>
     );
